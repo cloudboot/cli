@@ -1,0 +1,17 @@
+#!/usr/bin/env python
+
+import click
+
+from cloudboot.prompt.cloud_functions import cloud_functions_wizard
+
+
+@click.command()
+@click.option("-n", "--create", is_flag=True)
+@click.option("-l", "--registry", is_flag=True)
+def functions(create, registry):
+    if create:
+        cloud_functions_wizard()
+
+
+if __name__ == '__main__':
+    functions()

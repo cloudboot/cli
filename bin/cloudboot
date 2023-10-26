@@ -1,0 +1,14 @@
+#!/usr/bin/env python
+
+import click
+
+from cloudboot.prompt.project_settings import initialize_project_wizard
+
+
+@click.command()
+def initialize_settings():
+    initialize_project_wizard()
+
+
+if __name__ == '__main__':
+    initialize_settings()

@@ -1,0 +1,5 @@
+click~=8.1.7
+cloudboot~=0.1.0
+setuptools~=68.2.0
+inquirerpy~=0.3.4
+requests~=2.31.0
