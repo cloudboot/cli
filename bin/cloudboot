@@ -2,7 +2,7 @@
 
 import click
 
-from cloudboot.prompt.project_settings import initialize_project_wizard
+from cloudboot.wizard.project_settings import initialize_project_wizard
 
 
 @click.command()

@@ -6,3 +6,4 @@ class Property(StrEnum):
     PROJECT = 'project'
     PROJECTS = 'projects'
     REGIONS = 'regions'
+    DATABASES = 'databases'

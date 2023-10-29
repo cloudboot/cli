@@ -1,14 +1,14 @@
 from cloudboot.enum.Common import Common
 from cloudboot.enum.Crud import Crud
-from cloudboot.enum import Property
-from cloudboot.enum.Service import Service
+from cloudboot.enum.Property import Property
+from cloudboot.enum.CloudResource import CloudResource
 from cloudboot.utility.executor import execute
 
 
-def list_locations(service: Service):
+def list_locations(cloud_resource: CloudResource):
     cmd = ' '.join([
         Common.GCLOUD,
-        service,
+        cloud_resource,
         Property.REGIONS,
         Crud.LIST
     ])

@@ -2,7 +2,7 @@
 
 import click
 
-from cloudboot.prompt.cloud_functions import cloud_functions_wizard
+from cloudboot.wizard.cloud_functions import cloud_functions_wizard
 
 
 @click.command()

@@ -1,4 +1,6 @@
-from cloudboot.enum.Common import Common
+from InquirerPy.utils import color_print
+
+from cloudboot.enum.Common import Common, Args
 from cloudboot.enum.Crud import Crud
 from cloudboot.enum.Operation import Operation
 from cloudboot.enum.Property import Property
@@ -24,13 +26,28 @@ def list_projects():
     return data
 
 
-def set_project(project):
+def set_default_project(project_id):
     cmd = ' '.join([
         Common.GCLOUD,
         Property.CONFIG,
         Operation.SET,
         Property.PROJECT,
-        project
+        project_id
     ])
     result = execute(cmd)
+    if 'Updated' in result:
+        color_print([('yellow', ' '.join(['Default project has been set to', project_id]))])
     return result
+
+
+def create_project(project_id, project_name, set_as_default=True):
+    cmd = ' '.join([
+        Common.GCLOUD,
+        Property.PROJECTS,
+        Crud.CREATE,
+        project_id,
+        '='.join([Args.NAME, f'"{project_name}"']),
+    ])
+    if set_as_default:
+        cmd = ' '.join([cmd, Args.SET_AS_DEFAULT])
+    return execute(cmd)
