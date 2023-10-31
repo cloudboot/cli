@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='cloudboot',
-    version='0.1.0',
+    version='0.1.0-beta',
     description='A example Python package',
     url='https://github.com/lpsandaruwan',
     author='Lahiru Pathirage',

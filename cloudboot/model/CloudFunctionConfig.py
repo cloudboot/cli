@@ -1,3 +1,4 @@
+from cloudboot.config import SRC_DIR
 from cloudboot.enum.Common import Runtime, Trigger
 from cloudboot.model.Base import Base
 
@@ -36,4 +37,5 @@ class CloudFunctionConfig(Base):
         self.region_config = f'--region={region}'
 
     def get_options(self):
-        return f'{self.name} --gen2 --runtime={self.runtime} {self.trigger_config} {self.region_config}'
+        options = f'{self.name} --gen2 --runtime={self.runtime} {self.trigger_config} {self.region_config}'
+        return f'{options} --entry-point={self.entrypoint} --source={SRC_DIR}/{self.name}'

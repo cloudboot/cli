@@ -1,12 +1,13 @@
 from InquirerPy import inquirer
 from InquirerPy.utils import color_print
 
+from cloudboot.config import CLOUDBOOT_CONFIG
 from cloudboot.service.project import list_projects, create_project, set_default_project
 from cloudboot.model.Project import Project
-from cloudboot.utility.settings import write_settings
+from cloudboot.utility.store import rewrite_store
 
 
-def initialize_project_wizard():
+def init_cloud_project():
     project = None
     existing_project = inquirer.confirm(
         message='Use existing project?',
@@ -46,6 +47,6 @@ def initialize_project_wizard():
         color_print([('#ffc1cc', 'Something went wrong while trying to set up the project!')])
         exit(0)
     else:
-        write_settings({
-            'project_id': project.project_id
+        rewrite_store(CLOUDBOOT_CONFIG, {
+            'default_cloud_project': project.project_id
         })

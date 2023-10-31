@@ -1,8 +1,13 @@
 import hashlib
 import json
 import os
-from os.path import isfile
+import shutil
+from os.path import isfile, isdir
 from zipfile import ZipFile
+
+
+def path_exists(path):
+    return isdir(path)
 
 
 def file_exists(path):
@@ -10,7 +15,7 @@ def file_exists(path):
 
 
 def read_json_file(path):
-    if not file_exists(path):
+    if not path_exists(path):
         write_json_file({}, path)
     with open(path, 'r') as file_obj:
         return json.load(file_obj)
@@ -28,8 +33,15 @@ def write_data(content, path):
 
 def extract_zip_file(source, target):
     create_directory(target)
+    sub_dir = None
     with ZipFile(source) as archive:
         archive.extractall(target)
+        archive_files = archive.namelist()
+        sub_dir = archive_files[0] if all(item.startswith(archive_files[0]) for item in archive_files) else None
+    if sub_dir:
+        sub_dir = f'{target}/{sub_dir}'
+        os.system(f'mv {sub_dir}/* {target}/')
+        shutil.rmtree(sub_dir)
 
 
 def create_directory(path):

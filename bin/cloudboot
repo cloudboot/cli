@@ -1,14 +1,52 @@
 #!/usr/bin/env python
+import os
 
 import click
+from InquirerPy.utils import color_print
+from pyfiglet import figlet_format
+from termcolor import cprint
 
-from cloudboot.wizard.project_settings import initialize_project_wizard
+from cloudboot.service.cloud_functions import deploy_functions, list_local_functions
+from cloudboot.inquiry.cloud_functions import init_cloud_function, select_and_deploy_function
+
+from cloudboot.config import reset_root
+from cloudboot.service.cloudboot import initialize_cloudboot_project
+from cloudboot.inquiry.project import init_cloud_project
 
 
-@click.command()
-def initialize_settings():
-    initialize_project_wizard()
+@click.group()
+def cloudboot():
+    pass
+
+
+@cloudboot.command(help='Build cloudboot directories and cache.')
+def init():
+    initialize_cloudboot_project()
+    init_cloud_project()
+
+
+@cloudboot.command(help='cloudboot functions --help')
+@click.option('-n', '--create', is_flag=True, help='Create new Cloud function.')
+@click.option('-l', '--registry', is_flag=True, help='List Cloud functions.')
+@click.option('-d', '--deploy', is_flag=True, help='Deploy changed Cloud functions.')
+@click.option('-s', '--seldeploy', is_flag=True, help='Select and deploy a Cloud function.')
+def functions(create, registry, deploy, seldeploy):
+    if create:
+        init_cloud_function()
+    elif deploy:
+        deploy_functions()
+    elif registry:
+        list_local_functions()
+    elif seldeploy:
+        select_and_deploy_function()
+    else:
+        color_print([('', 'Try '), ('grey', 'cloudboot functions --help'), ('', ' for more guidance.')])
 
 
 if __name__ == '__main__':
-    initialize_settings()
+    cprint(figlet_format('CloudBoot'), 'yellow', attrs=['bold'])
+    color_print([('green', 'v0.1.0-beta')])
+    color_print([('darkgreen', 'Bunch of straightforward scripts and templates for Google Cloud Platform severless')])
+    current_dir = os.getcwd()
+    reset_root(current_dir)
+    cloudboot()
