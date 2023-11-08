@@ -1,16 +1,17 @@
 from cloudboot.config import SRC_DIR
-from cloudboot.enum.Common import Runtime, Trigger
+from cloudboot.enum.CloudServiceRuntime import CloudServiceRuntime
+from cloudboot.enum.CloudServiceTrigger import CloudServiceTrigger
 from cloudboot.model.Base import Base
 
 
 class CloudFunctionConfig(Base):
     name: str = ''
     entrypoint: str = 'main'
-    runtime_prefix: Runtime = Runtime.PYTHON
+    runtime_prefix: CloudServiceRuntime = CloudServiceRuntime.PYTHON
     runtime: str = 'python310'
     checksum: str = ''
     cloud_resource_name = ''
-    trigger_type: Trigger = Trigger.HTTPS
+    trigger_type: CloudServiceTrigger = CloudServiceTrigger.HTTP
     trigger_name = None
     trigger_config = None
     trigger_config_verified = False
@@ -21,16 +22,16 @@ class CloudFunctionConfig(Base):
         self.runtime = runtime
         self.runtime_prefix = runtime_prefix
 
-    def set_trigger_config(self, trigger_type: Trigger, trigger_name):
+    def set_trigger_config(self, trigger_type: CloudServiceTrigger, trigger_name):
         self.trigger_type = trigger_type
         self.trigger_name = trigger_name
         match trigger_type:
-            case Trigger.HTTPS:
+            case CloudServiceTrigger.HTTP:
                 self.trigger_config = '--trigger-http'
                 self.trigger_config_verified = True
-            case Trigger.PUBSUB:
+            case CloudServiceTrigger.PUBSUB:
                 self.trigger_config = f'--trigger-topic={trigger_name}'
-            case Trigger.STORAGE:
+            case CloudServiceTrigger.STORAGE:
                 self.trigger_config = f'--trigger-bucket={trigger_name}'
 
     def set_region_config(self, region):

@@ -7,7 +7,9 @@ GCLOUD_PUBSUB_TOPICS = 'gcloud pubsub topics'
 
 def create_pubsub_topic(name):
     cmd = f'{GCLOUD_PUBSUB_TOPICS} create {name}'
-    result = execute(cmd)
+    succeeded, result = execute(cmd)
+    if not succeeded:
+        exit(1)
     topic = re.search(r'\[(.*)\]', result)
     if topic:
         return topic
@@ -16,7 +18,10 @@ def create_pubsub_topic(name):
 
 def list_pubsub_topics():
     cmd = f'{GCLOUD_PUBSUB_TOPICS} list'
-    return execute(cmd).strip().replace('---\n', '').replace('name: ', '').split()
+    succeeded, result = execute(cmd)
+    if not succeeded:
+        return []
+    return result.strip().replace('---\n', '').replace('name: ', '').split()
 
 
 def topic_exists(topic):

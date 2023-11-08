@@ -1,0 +1,2 @@
+CLOUDBOOT = 'cloudboot'
+TEMPLATES = 'templates'

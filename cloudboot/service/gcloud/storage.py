@@ -6,13 +6,18 @@ GCLOUD_STORAGE_BUCKETS = 'gcloud storage buckets'
 def create_bucket(name):
     bucket = f'gs://{name}'
     cmd = f'{GCLOUD_STORAGE_BUCKETS} create {bucket}'
-    execute(cmd)
+    succeeded, result = execute(cmd)
+    if not succeeded:
+        return False
     return bucket_exists(bucket)
 
 
 def list_buckets():
     cmd = f'{GCLOUD_STORAGE_BUCKETS} list'
-    results = list(filter(lambda elem: 'name' in elem, execute(cmd).strip().split('\n')))
+    succeeded, results = execute(cmd)
+    if not succeeded:
+        return []
+    results = list(filter(lambda elem: 'name' in elem, results.strip().split('\n')))
     return [element.replace('name: ', '') for element in results]
 
 

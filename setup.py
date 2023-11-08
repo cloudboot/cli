@@ -8,6 +8,6 @@ setup(
     author='Lahiru Pathirage',
     author_email='lpsandaruwan@gmail.com',
     license='MIT',
-    scripts=['./bin/cloudboot', './bin/cloudboot'],
+    scripts=['./bin/cloudboot'],
     packages=find_packages(),
 )

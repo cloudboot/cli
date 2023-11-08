@@ -7,6 +7,10 @@ class DataMap(Base):
     keys = []
     map = {}
 
+    def push(self, key, value):
+        key.apped(key)
+        map[key] = value
+
     def choices(self):
         elements = []
         for key in self.keys:

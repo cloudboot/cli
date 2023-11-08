@@ -31,17 +31,14 @@ def write_data(content, path):
         return file_obj.write(content)
 
 
-def extract_zip_file(source, target):
+def extract_zip_file(source, target, src_dir=None):
     create_directory(target)
-    sub_dir = None
     with ZipFile(source) as archive:
         archive.extractall(target)
-        archive_files = archive.namelist()
-        sub_dir = archive_files[0] if all(item.startswith(archive_files[0]) for item in archive_files) else None
-    if sub_dir:
-        sub_dir = f'{target}/{sub_dir}'
-        os.system(f'mv {sub_dir}/* {target}/')
-        shutil.rmtree(sub_dir)
+    if src_dir:
+        src_dir = f'{target}/{src_dir}'
+        os.system(f'mv {src_dir}/* {target}/')
+        shutil.rmtree(src_dir)
 
 
 def create_directory(path):

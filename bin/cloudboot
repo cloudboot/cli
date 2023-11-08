@@ -6,11 +6,13 @@ from InquirerPy.utils import color_print
 from pyfiglet import figlet_format
 from termcolor import cprint
 
-from cloudboot.service.cloud_functions import deploy_functions, list_local_functions
+from cloudboot.enum.ColorCode import ColorCode
+from cloudboot.inquiry.auth import ensure_gcloud_credentials
+from cloudboot.service.gcloud.cloud_functions import deploy_functions, list_local_functions
 from cloudboot.inquiry.cloud_functions import init_cloud_function, select_and_deploy_function
 
 from cloudboot.config import reset_root
-from cloudboot.service.cloudboot import initialize_cloudboot_project
+from cloudboot.service.core.config import initialize_cloudboot_project, reload_cache
 from cloudboot.inquiry.project import init_cloud_project
 
 
@@ -19,10 +21,20 @@ def cloudboot():
     pass
 
 
-@cloudboot.command(help='Build cloudboot directories and cache.')
+@cloudboot.command(help='Build Cloud Bootstrapper directories and cache.')
 def init():
+    cprint(figlet_format('CloudBoot'), 'yellow', attrs=['bold'])
+    color_print([(ColorCode.SUCCESS, 'v0.1.0-beta')])
+    color_print([(ColorCode.SUCCESS,
+                  'A groovy collection of easy-peasy scripts and templates for Google Cloud serverless computing!')])
+    ensure_gcloud_credentials()
     initialize_cloudboot_project()
     init_cloud_project()
+
+
+@cloudboot.command(help='Rebuild/sync Cloud Bootstrapper cache.')
+def refresh():
+    reload_cache()
 
 
 @cloudboot.command(help='cloudboot functions --help')
@@ -40,13 +52,10 @@ def functions(create, registry, deploy, seldeploy):
     elif seldeploy:
         select_and_deploy_function()
     else:
-        color_print([('', 'Try '), ('grey', 'cloudboot functions --help'), ('', ' for more guidance.')])
+        color_print([('', 'Try '), (ColorCode.INFO, 'cloudboot functions --help'), ('', ' for more guidance.')])
 
 
 if __name__ == '__main__':
-    cprint(figlet_format('CloudBoot'), 'yellow', attrs=['bold'])
-    color_print([('green', 'v0.1.0-beta')])
-    color_print([('darkgreen', 'Bunch of straightforward scripts and templates for Google Cloud Platform severless')])
     current_dir = os.getcwd()
     reset_root(current_dir)
     cloudboot()
