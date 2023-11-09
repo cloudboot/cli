@@ -13,7 +13,9 @@ class CloudFunctionConfig(Base):
     cloud_resource_name = ''
     trigger_type: CloudServiceTrigger = CloudServiceTrigger.HTTP
     trigger_name = None
+    trigger_location = None
     trigger_config = None
+    trigger_event = None
     trigger_config_verified = False
     region_config = None
 
@@ -33,6 +35,11 @@ class CloudFunctionConfig(Base):
                 self.trigger_config = f'--trigger-topic={trigger_name}'
             case CloudServiceTrigger.STORAGE:
                 self.trigger_config = f'--trigger-bucket={trigger_name}'
+            case CloudServiceTrigger.FIRESTORE:
+                self.trigger_config = f'--trigger-resource="{trigger_name}"'
+
+    def set_trigger_event(self, event):
+        self.trigger_event = f'--trigger-event={event}'
 
     def set_region_config(self, region):
         self.region_config = f'--region={region}'

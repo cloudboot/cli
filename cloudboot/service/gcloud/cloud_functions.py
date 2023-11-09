@@ -7,6 +7,7 @@ from cloudboot.enum.CloudServiceRuntime import CloudServiceRuntime
 from cloudboot.enum.CloudServiceTrigger import CloudServiceTrigger
 from cloudboot.enum.ColorCode import ColorCode
 from cloudboot.service.core.template import get_template_config
+from cloudboot.service.gcloud.firestore import create_firestore_database, database_exists
 from cloudboot.service.gcloud.pubsub import topic_exists, create_pubsub_topic
 from cloudboot.service.gcloud.storage import bucket_exists, create_bucket
 from cloudboot.utility.downloader import download_template
@@ -83,9 +84,11 @@ def init_function_sources(name, runtime_prefix: CloudServiceRuntime, trigger: Cl
 def verify_trigger(trigger: CloudServiceTrigger, trigger_name: str, auto_configure=True):
     verified = None
     match trigger:
-        case trigger.PUBSUB:
+        case CloudServiceTrigger.FIRESTORE:
+            verified = database_exists(trigger_name)
+        case CloudServiceTrigger.PUBSUB:
             verified = topic_exists(trigger_name)
-        case trigger.STORAGE:
+        case CloudServiceTrigger.STORAGE:
             verified = bucket_exists(trigger_name)
     if verified:
         return verified
@@ -95,12 +98,14 @@ def verify_trigger(trigger: CloudServiceTrigger, trigger_name: str, auto_configu
             default=True
         )
     if auto_configure:
-        color_print([(ColorCode.HIGHLIGHT, f'Creating new {trigger} : {trigger_name}')])
+        color_print([(ColorCode.HIGHLIGHT, f'\tCreating new {trigger} : {trigger_name}')])
         match trigger:
-            case trigger.PUBSUB:
+            case CloudServiceTrigger.PUBSUB:
                 verified = create_pubsub_topic(trigger_name)
-            case trigger.STORAGE:
+            case CloudServiceTrigger.STORAGE:
                 verified = create_bucket(trigger_name)
+            case CloudServiceTrigger.FIRESTORE:
+                verified = create_firestore_database(trigger_name)
         return verified
     return False
 
@@ -114,7 +119,7 @@ def deploy_function(function_config):
     if not function_config.trigger_config_verified:
         result = verify_trigger(function_config.trigger_type, function_config.trigger_name)
         if not result:
-            color_print([(ColorCode.ERROR, '\tTrigger verification failed! Aborting deployment.')])
+            color_print([(ColorCode.ERROR, 'Trigger verification failed! Aborting deployment.')])
             return function_config
         function_config.set_trigger_config(function_config.trigger_type, result)
         function_config.trigger_config_verified = True
@@ -143,17 +148,17 @@ def deploy_functions():
 
 
 def list_local_functions():
-    color_print([(ColorCode.INFO, 'Functions created using Cloud Bootstrapper:')])
     functions = get_local_functions_list()
     if len(functions):
+        color_print([(ColorCode.INFO, 'Functions created using Cloud Bootstrapper:')])
         for key, element in functions.items():
             element = dict_to_cloud_function_config(element)
             runtime = element.runtime
             color_print([('', '\tname: '), (ColorCode.HIGHLIGHT, f'{key}'), ('', '   runtime: '), (ColorCode.HIGHLIGHT,
                                                                                                    f'{runtime}')])
     else:
-        color_print([(ColorCode.INFO, 'Could not find any cloud function locally!')])
+        color_print([(ColorCode.INFO, 'Local cloud function directory is empty!')])
 
 
 def get_local_functions_list():
-    return get_store(CloudService.CLOUD_FUNCTIONS)
+    return get_store(CloudService.CLOUD_FUNCTIONS) if store_exists(CloudService.CLOUD_FUNCTIONS) else {}

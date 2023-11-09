@@ -16,24 +16,42 @@ from cloudboot.service.core.config import initialize_cloudboot_project, reload_c
 from cloudboot.inquiry.project import init_cloud_project
 
 
-@click.group()
-def cloudboot():
-    pass
-
-
-@cloudboot.command(help='Build Cloud Bootstrapper directories and cache.')
-def init():
+def print_logo():
     cprint(figlet_format('CloudBoot'), 'yellow', attrs=['bold'])
     color_print([(ColorCode.SUCCESS, 'v0.1.0-beta')])
     color_print([(ColorCode.SUCCESS,
                   'A groovy collection of easy-peasy scripts and templates for Google Cloud serverless computing!')])
+
+
+@click.group(invoke_without_command=True, context_settings=dict(help_option_names=['-h', '--help']))
+def cloudboot():
+    context = click.get_current_context()
+    if context.invoked_subcommand is None:
+        print_logo()
+        click.echo(context.command.get_help(context))
+
+
+@cloudboot.command(help='Build Cloud Bootstrapper directories and cache.')
+@click.option('-h', '--help', is_flag=True, help='Display available options.')
+def init(help):
+    print_logo()
+    if help:
+        context = click.get_current_context()
+        click.echo(context.command.get_help(context))
+        exit(0)
     ensure_gcloud_credentials()
     initialize_cloudboot_project()
     init_cloud_project()
 
 
 @cloudboot.command(help='Rebuild/sync Cloud Bootstrapper cache.')
-def refresh():
+@click.option('-h', '--help', is_flag=True, help='Display available options.')
+def refresh(help):
+    if help:
+        print_logo()
+        context = click.get_current_context()
+        click.echo(context.command.get_help(context))
+        exit(0)
     reload_cache()
 
 
@@ -42,7 +60,13 @@ def refresh():
 @click.option('-l', '--registry', is_flag=True, help='List Cloud functions.')
 @click.option('-d', '--deploy', is_flag=True, help='Deploy changed Cloud functions.')
 @click.option('-s', '--seldeploy', is_flag=True, help='Select and deploy a Cloud function.')
-def functions(create, registry, deploy, seldeploy):
+@click.option('-h', '--help', is_flag=True, help='Display available options.')
+def functions(create, registry, deploy, seldeploy, help):
+    if help:
+        print_logo()
+        context = click.get_current_context()
+        click.echo(context.command.get_help(context))
+        exit(0)
     if create:
         init_cloud_function()
     elif deploy:

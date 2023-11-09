@@ -17,12 +17,16 @@ def list_buckets():
     succeeded, results = execute(cmd)
     if not succeeded:
         return []
-    results = list(filter(lambda elem: 'name' in elem, results.strip().split('\n')))
+    results = list(filter(lambda elem: 'name:' in elem, results.strip().split('\n')))
     return [element.replace('name: ', '') for element in results]
 
 
 def bucket_exists(bucket):
-    for element in list_buckets():
-        if bucket == element:
-            return f'gs://{element}'
+    cmd = f'{GCLOUD_STORAGE_BUCKETS} describe gs://{bucket}'
+    succeeded, result = execute(cmd)
+    if not succeeded:
+        return False
+    result = list(filter(lambda elem: 'name:' in elem, result.strip().split('\n')))
+    if len(result):
+        return result[0].replace('name: ', '')
     return False

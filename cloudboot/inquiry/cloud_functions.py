@@ -53,11 +53,13 @@ def init_cloud_function():
         choices=list(map(str, CloudServiceTrigger)),
         default=CloudServiceTrigger.HTTP
     ).execute()
+    print(trigger)
     trigger_name = {
-        CloudServiceTrigger.PUBSUB: inquirer.text(message='Topic name'),
+        CloudServiceTrigger.FIRESTORE: inquirer.text(message='Database'),
+        CloudServiceTrigger.PUBSUB: inquirer.text(message='Topic'),
         CloudServiceTrigger.STORAGE: inquirer.text(message='Bucket')
     }
-    if hasattr(trigger_name, trigger):
+    if trigger in trigger_name.keys():
         trigger_name = trigger_name[trigger].execute()
     else:
         trigger_name = None
@@ -74,6 +76,9 @@ def init_cloud_function():
 
 def select_and_deploy_function():
     functions = get_local_functions_list()
+    if len(functions) == 0:
+        color_print([(ColorCode.INFO, 'Local cloud function directory is empty!')])
+        return
     function = inquirer.select(
         message='Select cloud function',
         choices=[Choice(name=key, value=value) for key, value in functions.items()]

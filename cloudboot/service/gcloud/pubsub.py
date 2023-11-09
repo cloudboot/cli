@@ -17,7 +17,7 @@ def create_pubsub_topic(name):
 
 
 def list_pubsub_topics():
-    cmd = f'{GCLOUD_PUBSUB_TOPICS} list'
+    cmd = f'{GCLOUD_PUBSUB_TOPICS}'
     succeeded, result = execute(cmd)
     if not succeeded:
         return []
@@ -25,8 +25,10 @@ def list_pubsub_topics():
 
 
 def topic_exists(topic):
-    topics = list_pubsub_topics()
-    for element in topics:
-        if topic == element or topic == element.split('/')[-1]:
-            return element
+    cmd = f'{GCLOUD_PUBSUB_TOPICS} describe {topic}'
+    succeeded, result = execute(cmd)
+    if not succeeded:
+        return False
+    if 'name:' in result:
+        return result.strip().replace('name: ', '')
     return False
