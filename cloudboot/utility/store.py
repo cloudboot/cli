@@ -5,7 +5,7 @@ from cloudboot.config import CACHE_DIR
 
 
 def rewrite_store(name, obj):
-    with open(f'{CACHE_DIR}/{name}.json', 'w') as file_obj:
+    with open(f'{CACHE_DIR}/{name}.json', 'w+') as file_obj:
         json.dump(obj, file_obj, indent=4)
 
 

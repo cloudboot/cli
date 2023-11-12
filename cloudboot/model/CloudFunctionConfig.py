@@ -14,36 +14,38 @@ class CloudFunctionConfig(Base):
     trigger_type: CloudServiceTrigger = CloudServiceTrigger.HTTP
     trigger_name = None
     trigger_location = None
-    trigger_config = None
     trigger_event = None
-    trigger_config_verified = False
-    region_config = None
+    trigger_resource_verified = False
+    region = None
 
     def __init__(self, name, runtime, runtime_prefix):
         self.name = name
         self.runtime = runtime
         self.runtime_prefix = runtime_prefix
 
-    def set_trigger_config(self, trigger_type: CloudServiceTrigger, trigger_name):
+    def set_trigger_config(self, trigger_type: CloudServiceTrigger, trigger_name: str, location: str, verified=False):
         self.trigger_type = trigger_type
-        self.trigger_name = trigger_name
-        match trigger_type:
-            case CloudServiceTrigger.HTTP:
-                self.trigger_config = '--trigger-http'
-                self.trigger_config_verified = True
-            case CloudServiceTrigger.PUBSUB:
-                self.trigger_config = f'--trigger-topic={trigger_name}'
-            case CloudServiceTrigger.STORAGE:
-                self.trigger_config = f'--trigger-bucket={trigger_name}'
-            case CloudServiceTrigger.FIRESTORE:
-                self.trigger_config = f'--trigger-resource="{trigger_name}"'
+        self.trigger_name = trigger_name.lower() if trigger_type == CloudServiceTrigger.FIRESTORE else trigger_name
+        self.trigger_resource_verified = verified
+        if location:
+            self.trigger_location = location.lower()
 
     def set_trigger_event(self, event):
-        self.trigger_event = f'--trigger-event={event}'
+        self.trigger_event = event
 
-    def set_region_config(self, region):
-        self.region_config = f'--region={region}'
+    def set_region_config(self, region: str):
+        self.region = f'{region.lower()}'
 
     def get_options(self):
-        options = f'{self.name} --gen2 --runtime={self.runtime} {self.trigger_config} {self.region_config}'
-        return f'{options} --entry-point={self.entrypoint} --source={SRC_DIR}/{self.name}'
+        options = f'{self.name} --gen2 --runtime={self.runtime} --region={self.region} --entry-point={self.entrypoint}'
+        if not self.trigger_name:
+            options = f'{options} --trigger-http'
+        if self.trigger_type == CloudServiceTrigger.FIRESTORE:
+            options = f'{options} --trigger-event-filters="type={self.trigger_event},{self.trigger_name}"'
+        elif self.trigger_type == CloudServiceTrigger.PUBSUB:
+            options = f'{options} --trigger-topic={self.trigger_name}'
+        elif self.trigger_type == CloudServiceTrigger.STORAGE:
+            options = f'{options} --trigger-bucket={self.trigger_name}'
+        if self.trigger_location:
+            options = f'{options} --trigger-location={self.trigger_location}'
+        return f'{options} --source={SRC_DIR}/{self.name}'
