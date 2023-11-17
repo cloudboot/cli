@@ -2,20 +2,18 @@
 import os
 
 import click
-import termcolor
 from InquirerPy.utils import color_print
 from pyfiglet import figlet_format
 from termcolor import cprint
 
+from cloudboot.config import reset_root
 from cloudboot.enum.ColorCode import ColorCode
 from cloudboot.inquiry.auth import ensure_gcloud_credentials
-from cloudboot.service.gcloud.cloud_functions import deploy_functions, list_local_functions
 from cloudboot.inquiry.cloud_functions import init_cloud_function, select_and_deploy_function, \
     display_available_functions_templates
-
-from cloudboot.config import reset_root
-from cloudboot.service.core.config import initialize_cloudboot_project, reload_cache, ensure_gcloud
 from cloudboot.inquiry.project import init_cloud_project
+from cloudboot.service.core.config import initialize_cloudboot_project, reload_cache, ensure_gcloud
+from cloudboot.service.gcloud.cloud_functions import deploy_functions, list_local_functions
 
 
 def print_logo():

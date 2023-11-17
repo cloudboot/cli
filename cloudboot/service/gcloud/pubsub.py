@@ -1,5 +1,4 @@
 import json
-import re
 
 from cloudboot.consts import GCLOUD_CLI_FLAGS
 from cloudboot.model.DataMap import DataMap

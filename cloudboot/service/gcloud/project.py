@@ -7,7 +7,6 @@ from cloudboot.enum.ColorCode import ColorCode
 from cloudboot.model.DataMap import DataMap
 from cloudboot.utility.executor import execute
 
-
 GCLOUD_PROJECTS = 'gcloud projects'
 
 

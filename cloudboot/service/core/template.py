@@ -4,12 +4,11 @@ import requests
 
 from cloudboot.config import TEMPLATES_REGISTRY_URL
 from cloudboot.consts import TEMPLATES
-from cloudboot.enum.CloudServiceTrigger import CloudServiceTrigger
-from cloudboot.enum.CloudServiceRuntime import CloudServiceRuntime
 from cloudboot.enum.CloudService import CloudService
+from cloudboot.enum.CloudServiceRuntime import CloudServiceRuntime
+from cloudboot.enum.CloudServiceTrigger import CloudServiceTrigger
 from cloudboot.model.DataMap import DataMap
 from cloudboot.model.Template import Template
-from cloudboot.utility.file_manager import file_exists
 from cloudboot.utility.store import store_exists, rewrite_store, get_store
 
 
