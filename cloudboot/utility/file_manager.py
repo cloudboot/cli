@@ -7,31 +7,59 @@ from zipfile import ZipFile
 
 
 def path_exists(path):
+    """Check whether the given directory exists.
+
+    Parameters
+    ------------------
+    path: str
+        Path to the directory.
+    """
     return isdir(path)
 
 
 def file_exists(path):
+    """Check whether the given file exists.
+
+    Parameters
+    ------------------
+    path: str
+        Path to the file.
+    """
     return isfile(path)
 
 
-def read_json_file(path):
-    if not path_exists(path):
-        write_json_file({}, path)
-    with open(path, 'r') as file_obj:
-        return json.load(file_obj)
-
-
-def write_json_file(data, path):
-    with open(path, 'w') as file_obj:
-        json.dump(data, file_obj)
-
-
 def write_data(content, path):
+    """Creates file objects.
+
+    Writes given data object into a file as binary data. Used in downloading templates from a remote URL.
+
+    Parameters
+    ---------------------
+    content: any
+        Data object to be saved.
+    path: str
+        Path to the file which data object need to be saved.
+    """
     with open(path, 'wb') as file_obj:
         return file_obj.write(content)
 
 
 def extract_zip_file(source, target, src_dir=None):
+    """Extracts zip archive.
+
+    Extracts given .zip archive file into a target location and modify the source files root for the given context.
+    Archive file won't get deleted after the extraction.
+
+    Parameters
+    -------------------------------
+    source: str
+        Path to .zip file.
+    target: str
+        Path where zip file needs to be extracted into.
+    src_dir: str
+        Actual directory which contains sources of the extracted archive.
+
+    """
     create_directory(target)
     with ZipFile(source) as archive:
         archive.extractall(target)
@@ -48,11 +76,10 @@ def create_directory(path):
 def calculate_checksum(path):
     """Calculates the checksum of a file.
 
-    Args:
-      path: The path to the file.
-
-    Returns:
-      The checksum of the file.
+    Parameters
+    ----------------------
+      path: str
+        The path to the source file.
     """
     hash_md5 = hashlib.md5()
     with open(path, "rb") as f:
@@ -62,6 +89,15 @@ def calculate_checksum(path):
 
 
 def directory_checksum(path):
+    """Retrieve checksum of a source directory
+
+    Calculates and concatenate checksums of a given directory tree.
+
+    Parameters
+    -----------------------
+    path: str
+        Path to the source directory.
+    """
     checksum = ""
     for root, dirs, files in os.walk(path):
         for filename in files:

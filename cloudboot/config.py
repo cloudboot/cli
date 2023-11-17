@@ -8,6 +8,15 @@ TEMPLATES_REGISTRY_URL = 'https://raw.githubusercontent.com/cloudboot/template-r
 
 
 def reset_root(path=os.getcwd()):
+    """ Reset the workspace directory.
+
+    This function will set the working directory which includes Cloud bootstrapper configuration files, cache
+    and project sources.
+
+    parameters:
+    path: str, optional
+        Current directory will be taken from where cloudboot command runs.
+    """
     global ROOT_DIR, SRC_DIR, CACHE_DIR, CLOUDBOOT_CONFIG
     ROOT_DIR = path
     SRC_DIR = f'{ROOT_DIR}/src'

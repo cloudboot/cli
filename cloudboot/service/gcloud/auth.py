@@ -12,7 +12,7 @@ def valid_gcloud_credentials():
 
 
 def set_gcloud_credentials(key_file: str):
-    cmd = f'{GCLOUD_AUTH} activate-service-account --key-file={key_file}'
+    cmd = f'{GCLOUD_AUTH} login --cred-file={key_file}'
     succeeded, result = execute(cmd)
     if not succeeded:
         exit(1)

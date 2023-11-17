@@ -8,8 +8,10 @@ from cloudboot.enum.CloudServiceRuntime import CloudServiceRuntime
 from cloudboot.enum.CloudServiceTrigger import CloudServiceTrigger
 from cloudboot.enum.ColorCode import ColorCode
 from cloudboot.model.CloudFunctionConfig import CloudFunctionConfig
+from cloudboot.service.core.template import available_templates
 from cloudboot.service.gcloud.cloud_functions import list_runtimes, init_function_sources, list_regions, \
-    set_default_functions_region, get_local_functions_list, deploy_function, get_functions_event_types
+    set_default_functions_region, get_local_functions_list, deploy_function, get_functions_event_types, \
+    list_available_functions_templates
 from cloudboot.service.gcloud.firestore import list_firestore_databases, list_firestore_database_locations
 from cloudboot.service.gcloud.pubsub import list_pubsub_topics
 from cloudboot.service.gcloud.storage import list_storage_buckets
@@ -135,3 +137,9 @@ def select_and_deploy_function():
         choices=[Choice(name=key, value=value) for key, value in functions.items()]
     ).execute()
     deploy_function(function)
+
+
+def display_available_functions_templates():
+    runtime_prefix = inquirer.select(message='Select runtime environment', choices=list(map(str, CloudServiceRuntime)),
+                                     default=CloudServiceRuntime.PYTHON).execute()
+    list_available_functions_templates(runtime_prefix)

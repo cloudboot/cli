@@ -3,7 +3,8 @@ from enum import StrEnum
 
 class ColorCode(StrEnum):
     ERROR = '#e65c5c'
-    HIGHLIGHT = '#5f6601'
+    HIGHLIGHT = '#FFF033'
     INFO = 'darkgrey'
     SUCCESS = '#0f7d1c'
     WARNING = '#b5742f'
+    MAIN = '#646363'

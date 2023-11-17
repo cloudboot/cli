@@ -10,7 +10,7 @@ from cloudboot.enum.CloudServiceRuntime import CloudServiceRuntime
 from cloudboot.enum.CloudServiceTrigger import CloudServiceTrigger
 from cloudboot.enum.ColorCode import ColorCode
 from cloudboot.model.DataMap import DataMap
-from cloudboot.service.core.template import get_template_config
+from cloudboot.service.core.template import get_template_config, available_templates
 from cloudboot.service.gcloud.firestore import create_firestore_database, firestore_database_exists
 from cloudboot.service.gcloud.pubsub import pubsub_topic_exists, create_pubsub_topic
 from cloudboot.service.gcloud.storage import storage_bucket_exists, create_storage_bucket
@@ -183,3 +183,12 @@ def get_functions_event_types(resource: CloudServiceTrigger):
             events.push_all(result)
             rewrite_store(store_name, result)
     return events
+
+
+def list_available_functions_templates(runtime: CloudServiceRuntime):
+    templates = available_templates(CloudService.CLOUD_FUNCTIONS, runtime)
+    if templates.is_empty():
+        color_print([(ColorCode.WARNING, f'Could not find templates for the provided runtime {runtime}')])
+        exit(0)
+    for key in templates.keys:
+        color_print([(ColorCode.HIGHLIGHT, f'{key}: '), (ColorCode.INFO, templates.map[key][templates.display_name])])
