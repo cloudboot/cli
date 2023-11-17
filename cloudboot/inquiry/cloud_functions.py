@@ -8,10 +8,9 @@ from cloudboot.enum.CloudServiceRuntime import CloudServiceRuntime
 from cloudboot.enum.CloudServiceTrigger import CloudServiceTrigger
 from cloudboot.enum.ColorCode import ColorCode
 from cloudboot.model.CloudFunctionConfig import CloudFunctionConfig
-from cloudboot.service.core.template import available_templates
 from cloudboot.service.gcloud.cloud_functions import list_runtimes, init_function_sources, list_regions, \
-    set_default_functions_region, get_local_functions_list, deploy_function, get_functions_event_types, \
-    list_available_functions_templates
+    set_default_functions_region, get_local_functions_list, get_functions_event_types, \
+    list_available_functions_templates, deploy_selected_function
 from cloudboot.service.gcloud.firestore import list_firestore_databases, list_firestore_database_locations
 from cloudboot.service.gcloud.pubsub import list_pubsub_topics
 from cloudboot.service.gcloud.storage import list_storage_buckets
@@ -115,11 +114,14 @@ def init_cloud_function():
     selected_region = select_function_region(cloudboot_config)
     selected_runtime, runtime_prefix = select_function_runtime(selected_region)
     trigger, trigger_event, trigger_name, trigger_location, trigger_verified = select_function_trigger(selected_region)
-    init_function_sources(name, runtime_prefix, trigger)
+    if not trigger_location:
+        trigger_location = selected_region
+    template = init_function_sources(name, runtime_prefix, trigger)
     cloud_function_config = CloudFunctionConfig(name, selected_runtime, runtime_prefix)
     cloud_function_config.set_trigger_config(trigger, trigger_name, trigger_location, trigger_verified)
     cloud_function_config.set_trigger_event(trigger_event)
     cloud_function_config.set_region_config(selected_region)
+    cloud_function_config.set_entrypoint(template.entrypoint)
     if not store_exists(CloudService.CLOUD_FUNCTIONS):
         rewrite_store(CloudService.CLOUD_FUNCTIONS, {})
     instances = get_store(CloudService.CLOUD_FUNCTIONS)
@@ -136,7 +138,7 @@ def select_and_deploy_function():
         message='Select cloud function',
         choices=[Choice(name=key, value=value) for key, value in functions.items()]
     ).execute()
-    deploy_function(function)
+    deploy_selected_function(function, functions)
 
 
 def display_available_functions_templates():

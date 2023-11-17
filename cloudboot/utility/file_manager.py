@@ -103,3 +103,4 @@ def directory_checksum(path):
         for filename in files:
             file_checksum = calculate_checksum(os.path.join(root, filename))
             checksum += file_checksum
+    return checksum

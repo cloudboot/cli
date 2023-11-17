@@ -36,16 +36,21 @@ class CloudFunctionConfig(Base):
     def set_region_config(self, region: str):
         self.region = f'{region.lower()}'
 
+    def set_entrypoint(self, ep):
+        if ep:
+            self.entrypoint = ep
+
     def get_options(self):
         options = f'{self.name} --gen2 --runtime={self.runtime} --region={self.region} --entry-point={self.entrypoint}'
-        if not self.trigger_name:
+        if not self.trigger_name or self.trigger_type == CloudServiceTrigger.HTTP:
             options = f'{options} --trigger-http'
+            options = f'{options} --no-allow-unauthenticated'
         if self.trigger_type == CloudServiceTrigger.FIRESTORE:
-            options = f'{options} --trigger-event-filters="type={self.trigger_event},{self.trigger_name}"'
+            options = f'{options} --trigger-event-filters="type={self.trigger_event},database={self.trigger_name}"'
         elif self.trigger_type == CloudServiceTrigger.PUBSUB:
             options = f'{options} --trigger-topic={self.trigger_name}'
         elif self.trigger_type == CloudServiceTrigger.STORAGE:
             options = f'{options} --trigger-bucket={self.trigger_name}'
-        if self.trigger_location:
+        if self.trigger_location and self.trigger_type != CloudServiceTrigger.HTTP:
             options = f'{options} --trigger-location={self.trigger_location}'
         return f'{options} --source={SRC_DIR}/{self.name}'
